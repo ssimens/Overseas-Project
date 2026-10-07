@@ -1,0 +1,101 @@
+  /* Allineamento Barra Superiore */
+.barra-navigazione-superiore {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: #3b0764; /* Colore viola dell'header */
+    color: white;
+}
+
+/* Contenitore di posizionamento */
+.profilo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Distanza tra il testo e l'icona */
+}
+
+/* Stile per Nome e Matricola */
+.testo-utente-header {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Icona circolare stilizzata */
+.btn-avatar {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-avatar:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #ffffff;
+}
+
+.btn-avatar svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Menu Dropdown (Nascosto di default) */
+.custom-dropdown-menu {
+  display: block !important;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 140px;
+  padding: 6px 0;
+}
+
+/* Pulsante Esci dentro il menu */
+.item-logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    color: #ef4444;
+    background-color: #3b0764;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* BARRA SUPERIORE IN VIOLA #473378 */
+.barra-navigazione-superiore {
+    background-color: var(--purple-main);
+    color: white;
+    padding: 12px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.barra-navigazione-testo-titolo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.2px;
+}
+
+.barra-navigazione-utente {
+    font-size: 0.82rem;
+    opacity: 0.85;
+}

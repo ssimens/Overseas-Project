@@ -1,0 +1,271 @@
+<main class="contenitore-lista-pratiche">
+    <div class="dettaglio-top-bar">
+        <button (click)="goBackHome()" class="btn-back-home">← Back to Dashboard</button>
+    </div>
+
+    <div class="lista-pratiche-intestazione">
+        <div class="lista-pratiche-titolo">
+            <h2>Application details #{{ applicationInfo()?.id }} — {{ applicationInfo()?.hostUni }}</h2>
+            <p>{{ applicationInfo()?.hostUniCity }} ({{ applicationInfo()?.hostUniCountry }}) — A.A. {{ applicationInfo()?.year }}</p>
+        </div>
+    </div>
+
+    <!-- linea stati avanzamento pratica -->
+    <time-line [timeLineState]="applicationInfo()?.state"></time-line>
+
+    <!-- informazioni generali pratica -->
+    <div class="sezione-card">
+        <div class="sezione-titolo">GENERAL INFORMATION</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">HOST UNIVERSITY</span>
+                <span class="info-value">{{ applicationInfo()?.hostUni }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">COUNTRY - CITY</span>
+                <span class="info-value">{{ applicationInfo()?.hostUniCountry }} - {{ applicationInfo()?.hostUniCity }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">PERIOD - YEAR</span>
+                <span class="info-value">{{ applicationInfo()?.scheduledPeriod }} - {{ applicationInfo()?.year }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">STUDENT</span>
+                <span class="info-value">{{ applicationInfo()?.studentName }} {{ applicationInfo()?.studentSurname }} - {{ applicationInfo()?.studentEmail }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- mapping corsi e valutazione esami -->
+    <div class="sezione-card">
+        <div class="sezione-titolo">
+            STUDY PLAN
+        </div>
+        <div class="tabella-overflow">
+            <form (ngSubmit)="submitDecisions($event)">
+                <table class="tabella-pratiche tabella-mapping">
+                    <thead>
+                        <tr>
+                            <th>FOREIGN CODE</th>
+                            <th>FOREIGN COURSE TITLE</th>
+                            <th>FOREIGN CFU</th>
+                            <th>CA' FOSCARI CODE</th>
+                            <th>CA' FOSCARI COURSE TITLE</th>
+                            <th>CA' FOSCARI CFU</th>
+                            @if(applicationInfo()?.state == 'In riconoscimento esami')
+                            {
+                                <th>EXAM VOTE</th>
+                                <th>EXAM DATE</th>    
+                                <th>ACTION</th>
+                            }
+                            @if(['In attesa conferma Ufficio Overseas', 'Chiusa'].includes(applicationInfo()?.state ?? ''))
+                            {
+                                <th>FEEDBACK</th>
+                            }
+                        </tr> 
+                    </thead>
+                    <tbody>
+                        @if (examsMapping().length > 0) 
+                        {
+                            @for (mapping of examsMapping();  track mapping.foreignCourseCode + '-' + mapping.caFoscariCourseCode) 
+                            {
+                                    <tr
+                                    [class.row-approved]="(applicationInfo()?.state === 'Chiusa' || applicationInfo()?.state === 'In attesa conferma Ufficio Overseas') && mapping.approved"
+                                    [class.row-not-approved]="(applicationInfo()?.state === 'Chiusa' || applicationInfo()?.state === 'In attesa conferma Ufficio Overseas') && !mapping.approved"
+                                    >
+
+                                    <td><strong>{{ mapping.foreignCourseCode }}</strong></td>
+                                    <td>{{ mapping.foreignCourseTitle }}</td>
+                                    <td><span class="badge-cfu">{{ mapping.foreignCourseCFU }} CFU</span></td>
+                                    <td><strong>{{ mapping.caFoscariCourseCode }}</strong></td>
+                                    <td>{{ mapping.caFoscariCourseTitle }}</td>
+                                    <td><span class="badge-cfu">{{ mapping.caFoscariCourseCFU }} CFU</span></td>
+                                    @if(applicationInfo()?.state == 'In riconoscimento esami')
+                                    {
+                                        @if(mapping.examVote)
+                                        {
+                                            <td>{{ mapping.examVote }}</td>    
+                                            <td>{{ mapping.examDate }}</td>    
+                                            <td>                                
+                                                <label>
+                                                    <input type="radio" name="decision_{{ mapping.caFoscariCourseCode }}_{{ mapping.foreignCourseCode }}_{{ mapping.idApplication }}" value="{{ mapping.examVote }}" required>
+                                                    Accept
+                                                </label>
+
+                                                <label>
+                                                    <input type="radio" name="decision_{{ mapping.caFoscariCourseCode }}_{{ mapping.foreignCourseCode }}_{{ mapping.idApplication }}" value="-1">
+                                                    Refuse
+                                                </label>
+                                            </td>
+                                        }
+                                        @else
+                                        {
+                                            <td>Exam not taken</td>    
+                                            <td>Date not available</td>    
+                                            <td>No action required</td>
+                                        }
+                                    }
+
+                                    @if(['In attesa conferma Ufficio Overseas', 'Chiusa'].includes(applicationInfo()?.state ?? ''))
+                                    {
+                                        @if(mapping.approved)
+                                        {
+                                            <td>APPROVED</td>
+                                        }
+                                        @else
+                                        {
+                                            <td>NOT APPROVED</td>
+                                        }
+                                    }
+                                </tr>
+                            }
+                        }
+                        @else
+                        {
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">
+                                    No courses associated with this application.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if(applicationInfo()?.state == 'In riconoscimento esami')
+                {
+                    TRANSCRIPTS OF RECORDS: 
+                    <button type="button" (click)="downloadTranscriptsOfRecords()" class="btn-download-la">
+                        📥 Download TOR
+                    </button>
+                    <br>
+                    <button type="submit" class="btn-accedi">
+                        Invia scelte
+                    </button>
+                }
+            </form>
+        </div>
+    </div>
+
+    <!-- sezione del Learning Agreement -->
+    <div class="sezione-card">
+        <div class="sezione-titolo">
+            LEARNING AGREEMENT
+        </div>
+        <!-- In attesa di decisione del docente -->
+
+        @if(applicationInfo()?.learningagreement == null)
+        {
+            LEARNING AGREEMENT NOT UPLOADED
+        }
+        
+        @else if((applicationInfo()?.state == 'In attesa di approvazione del Learning Agreement' && applicationInfo()?.statusla != false && applicationInfo()?.statusla != true) || (applicationInfo()?.state == 'Mobilità in corso' && applicationInfo()?.modifiedla == true && applicationInfo()?.approvedmodifies == null))
+        {
+            <div class="la-pending-banner-docente">
+                <div class="la-approved-info" style="margin-bottom: 15px;">
+                    <div class="la-icon-pending">⏳</div>
+                    <div>
+                        <strong>Learning Agreement to be Evaluated</strong>
+                        <p class="subtext-la-pending">View the document and select an action.</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <button type="button" (click)="downloadLearningAgreement()" class="btn-download-la">
+                        📥 Download LA
+                    </button>
+                </div>
+
+                <!-- Azioni del Docente -->
+                @if(!isRejecting) 
+                {
+                    <div class="docente-actions">
+                        <button type="button" class="btn-accetta" (click)="acceptLA()">
+                            ✓ Accept
+                        </button>   
+                        <button type="button" class="btn-rifiuta" (click)="isRejecting = true">
+                            ✕ Refuse
+                        </button>
+                    </div>
+                } 
+                @else 
+                {
+                    <!-- Form per inserire il motivo del rifiuto -->
+                    <div class="la-motivazione-form">
+                        <label for="motivazione">Insert refusal motivation:</label>
+                        <textarea id="motivazione"  [(ngModel)]="refusalMotivation"  placeholder="Inserisci la motivazione..." rows="3" class="textarea-motivazione"></textarea>
+                        <div class="form-actions">
+                            <button type="button" class="btn-conferma-rifiuto" [disabled]="!refusalMotivation.trim()" (click)="confirmRejectionLA()">
+                                Confirm refusal
+                            </button>
+                            <button type="button" class="btn-annulla" (click)="isRejecting = false">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        @else
+        {
+            <!-- CASO 1: Già Approvato -->
+            @if (applicationInfo()?.statusla == true) 
+            {
+                <div class="la-approved-banner">
+                    <div class="la-approved-info">
+                        <div class="la-icon">✓</div>
+                        <div>
+                            <strong>Approved Learning Agreement</strong>
+                            <p class="subtext-la">This Learning Agreement has been approved by you.</p>
+                        </div>
+                    </div>
+                    <button type="button" (click)="downloadLearningAgreement()" class="btn-download-la">
+                        📥 Download LA
+                    </button>
+                </div>
+            } 
+            <!-- CASO 2: Già Respinto -->
+            @else if(applicationInfo()?.statusla == false) 
+            {
+                <div class="la-rejected-banner">
+                    <div class="la-rejected-header">
+                        <div class="la-icon-rejected">✕</div>
+                        <div>
+                            <strong class="la-rejected-title">Rejected Learning Agreement</strong>
+                            <p class="subtext-la-rejected">This Learning Agreement has been rejected by you. We are waiting for a change from the student.</p>
+                        </div>
+                    </div>
+                    <div class="la-motivazione-box">
+                        <span class="la-motivazione-label">Refusal reason:</span>
+                        <p class="la-motivazione-testo">
+                            {{ applicationInfo()?.refusalMotivation || 'No refusal motivation given.' }}
+                        </p>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    @if(applicationInfo()?.state == 'Chiusa')
+    {
+        TRANSCRIPTS OF RECORDS: 
+        <button type="button" (click)="downloadTranscriptsOfRecords()" class="btn-download-la">
+            📥 Download TOR
+        </button>
+    }
+
+    <!-- Note Studente -->
+    <div class="sezione-card">
+        <div class="sezione-titolo">Optional note for professor</div>
+        @if(applicationInfo()?.studentNotes && applicationInfo()?.studentNotes.trim())
+        {
+            <div class="box-note-lettura">
+                {{ applicationInfo()?.studentNotes }}
+            </div>
+        }
+        @else
+        {
+            <p style="color: #64748b; font-size: 0.88rem; margin: 0; font-style: italic;">
+                No notes entered by the student for this application.
+            </p>
+        }
+    </div>
+</main>

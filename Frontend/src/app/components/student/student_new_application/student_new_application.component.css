@@ -1,0 +1,228 @@
+.application-list-container {
+  max-width: 960px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.application-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.application-list-title h2 {
+  color: var(--purple-main, #4f46e5);
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.4px;
+}
+
+.application-list-title p {
+  color: var(--text-muted, #64748b);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.section-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--purple-main, #4f46e5);
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.form-dropdown {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.88rem;
+  background-color: #fff;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.form-dropdown:focus {
+  border-color: var(--purple-main, #4f46e5);
+}
+
+.table-overflow {
+  overflow-x: auto;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.mapping-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.mapping-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.mapping-table td {
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.btn-remove-row {
+  background-color: var(--purple-main, #4f46e5);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-remove-row:hover {
+  background-color: var(--purple-hover, #4338ca);
+}
+
+.new-course-container {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.new-course-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--purple-main, #4f46e5);
+  margin-bottom: 8px;
+}
+
+.new-course-insertion {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-add-course {
+  background-color: var(--purple-main, #4f46e5);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 42px;
+  height: 38px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-add-course:hover {
+  background-color: var(--purple-hover, #4338ca);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.btn-cancel {
+  background-color: white;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-submit {
+  background-color: var(--purple-main, #4f46e5);
+  color: white;
+  border: none;
+  padding: 10px 32px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-submit:hover {
+  background-color: var(--purple-hover, #4338ca);
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.88rem;
+  font-family: inherit;
+  background-color: #fff;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  resize: none;
+  min-height: 90px;
+}
+
+.form-textarea:focus {
+  border-color: var(--purple-main, #4f46e5);
+}

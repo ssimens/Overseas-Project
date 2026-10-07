@@ -1,0 +1,7 @@
+/* src/styles.css */
+:root {
+  --purple-main: #473378;    /* Metti qui il codice esatto del viola del tuo header */
+  --purple-hover: #37265e;   /* Una tonalità leggermente più scura per l'effetto hover */
+  --text-muted: #64748b;
+  --table-header-bg: #f8fafc;
+}

@@ -1,0 +1,413 @@
+<main class="contenitore-lista-pratiche">
+    <div class="dettaglio-top-bar">
+        <a (click)="goBackHome()" class="btn-back">← Back to Dashboard</a>
+    </div>
+
+    <div class="lista-pratiche-intestazione">
+        <div class="lista-pratiche-titolo">
+            <h2>Application details #{{ applicationInfo()?.id }} — {{ applicationInfo()?.hostUni }}</h2>
+            <p>{{ applicationInfo()?.hostUniCity }} ({{ applicationInfo()?.hostUniCountry }}) — A.A. {{ applicationInfo()?.year }}</p>
+        </div>
+    </div>
+
+    <time-line [timeLineState]="applicationInfo()?.state"></time-line>
+
+    <!-- informazioni generali pratica -->
+    <div class="sezione-card">
+        <div class="sezione-titolo">GENERAL INFORMATION</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">HOST UNIVERSITY</span>
+                <span class="info-value">{{ applicationInfo()?.hostUni }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">COUNTRY - CITY</span>
+                <span class="info-value">{{ applicationInfo()?.hostUniCountry }} - {{ applicationInfo()?.hostUniCity }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">PERIOD - YEAR</span>
+                <span class="info-value">{{ applicationInfo()?.scheduledPeriod }} - {{ applicationInfo()?.year }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">PROFESSOR</span>
+                <span class="info-value">{{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }} - {{ applicationInfo()?.professorEmail }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">STUDENT</span>
+                <span class="info-value">{{ applicationInfo()?.studentName }} {{ applicationInfo()?.studentSurname }} - {{ applicationInfo()?.studentEmail }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- mapping corsi -->
+    <div class="sezione-card">
+        <div class="sezione-titolo">
+            STUDY PLAN
+        </div>
+        <div class="tabella-overflow">
+            <table class="tabella-pratiche tabella-mapping">
+                <thead>
+                    <tr>
+                        <th>FOREIGN CODE</th>
+                        <th>FOREIGN COURSE TITLE</th>
+                        <th>FOREIGN CFU</th>
+                        <th>CA' FOSCARI CODE</th>
+                        <th>CA' FOSCARI COURSE TITLE</th>
+                        <th>CA' FOSCARI CFU</th>
+                    </tr> 
+                </thead>
+                <tbody>
+                    @if (examsMapping().length > 0) 
+                    {
+                        @for (mapping of examsMapping();  track mapping.foreignCourseCode + '-' + mapping.caFoscariCourseCode) 
+                        {
+                            <tr>
+                                <td><strong>{{ mapping.foreignCourseCode }}</strong></td>
+                                <td>{{ mapping.foreignCourseTitle }}</td>
+                                <td><span class="badge-cfu">{{ mapping.foreignCourseCFU }} CFU</span></td>
+                                <td><strong>{{ mapping.caFoscariCourseCode }}</strong></td>
+                                <td>{{ mapping.caFoscariCourseTitle }}</td>
+                                <td><span class="badge-cfu">{{ mapping.caFoscariCourseCFU }} CFU</span></td>
+                            </tr>
+                        }
+                    }
+                    @else
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">
+                                No courses associated with this practice.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- sezione del Learning Agreement -->
+    <div class="sezione-card">
+        <div class="sezione-titolo">
+            LEARNING AGREEMENT
+        </div>
+
+        <!-- In attesa di decisione del docente -->
+        @if (applicationInfo()?.state == 'In attesa di approvazione del Learning Agreement') 
+        {
+            <div class="la-pending-banner-docente">
+                <div class="la-approved-info" style="margin-bottom: 15px;">
+                    <div class="la-icon-pending">⏳</div>
+                    <div>
+                        <strong>Learning Agreement to be Evaluated by {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}</strong>
+                        <p class="subtext-la-pending">View the document</p>
+                    </div>
+                </div>
+
+                <!-- Bottone Download sempre visibile per la revisione -->
+                <div style="margin-bottom: 20px;">
+                    <button type="button" (click)="downloadLearningAgreement()" class="btn-download-la">
+                        📥 Download LA
+                    </button>
+                </div>
+            </div>
+        }
+        @else
+        {
+            <!-- Già Approvato -->
+            @if(applicationInfo()?.statusla == true) 
+            {
+                <div class="la-approved-banner">
+                    <div class="la-approved-info">
+                        <div class="la-icon">✓</div>
+                        <div>
+                            <strong>Approved Learning Agreement</strong>
+                            <p class="subtext-la">This Learning Agreement has been approved by professor {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}.</p>
+                        </div>
+                    </div>
+                    <button type="button" (click)="downloadLearningAgreement()" class="btn-download-la">
+                        📥 Download LA
+                    </button>
+                </div>
+            } 
+            @else if(applicationInfo()?.statusla == false) 
+            {
+                <!-- Già Respinto -->
+                <div class="la-rejected-banner">
+                    <div class="la-rejected-header">
+                        <div class="la-icon-rejected">✕</div>
+                        <div>
+                            <strong class="la-rejected-title">Refused Learning Agreement</strong>
+                            <p class="subtext-la-rejected">This Learning Agreement has been refused by professor {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}. Wait for an accepted learning agreement before marking the pre-departure phase completed.</p>
+                        </div>
+                    </div>
+                    <div class="la-motivazione-box">
+                        <span class="la-motivazione-label">Refusal reason:</span>
+                        <p class="la-motivazione-testo">
+                            {{ applicationInfo()?.refusalMotivation || 'No motivation provided.' }}
+                        </p>
+                    </div>
+                </div>
+            } 
+        }
+    </div>
+
+    <!-- Note Studente -->
+    <div class="sezione-card">
+        <div class="sezione-titolo">Optional note for professor</div>
+        @if(applicationInfo()?.studentNotes && applicationInfo()?.studentNotes.trim())
+        {
+            <div class="box-note-lettura">
+                {{ applicationInfo()?.studentNotes }}
+            </div>
+        }
+        @else
+        {
+            <p style="color: #64748b; font-size: 0.88rem; margin: 0; font-style: italic;">
+                No notes entered by the student for this application.
+            </p>
+        }
+
+    </div>
+
+    <!-- conferma fase pre-partenza completata -->
+    <div>
+        @if(applicationInfo()?.state == 'In attesa conferma pre-partenza') 
+        {
+            <button (click)="confirmPreDeparture()">Mark Pre-Departure completed</button>
+        }
+    </div>
+
+    <!-- fase in mobilita -->
+    <div class="sezione-card card-fase-mobilita">
+        <div class="sezione-fase-header">
+            <span class="badge-fase">IN MOBILITY PHASE</span>
+            <h3 class="sezione-titolo-fase">Stay Management and Mobility Changes</h3>
+        </div>
+        @if(['Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami','In attesa conferma Ufficio Overseas', 'Chiusa'].includes(applicationInfo()?.state ?? ''))
+        {
+            <!-- Data Arrivo -->
+            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                Arrival date: {{applicationInfo()?.arriveDate}}
+            </div>
+
+            <hr class="fase-divider">
+
+            <!-- 2. modifica mapping esami e LA -->
+            <div class="box-sub-fase">
+                <h4 class="sub-fase-titolo">CHANGE TO STUDY PLAN</h4>
+                <p class="sottotesto-sezione">If student exam schedule changes, you will see here if the professor will accept the changes</p>
+
+                <!-- attesa che venga approvato o rifiutato mapping e LA modificato (da rivedere le condizioni) -->
+                @if(applicationInfo()?.state == 'Mobilità in corso' && (applicationInfo()?.modifiedla == true && applicationInfo()?.approvedmodifies == null))
+                {
+                    <div class="la-pending-banner" style="margin-top: 15px;">
+                        <div class="la-approved-info">
+                        <div class="la-icon-pending">⏳</div>
+                        <div>
+                            <strong style="color: #92400e; font-size: 0.95rem;">Change to the Learning Agreement pending approval</strong>
+                            <p class="subtext-la-pending" style="margin-top: 4px;">
+                                Under evaluation by the relevant professor <strong>{{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}</strong>.
+                            </p>
+                            @if(applicationInfo()?.learningagreement && applicationInfo()?.modifiedla)
+                            {
+                                <p style="font-size: 0.8rem; color: #b45309; margin-top: 6px;">📄 Uploaded file: <em>{{ applicationInfo()?.learningagreement }}</em></p>
+                            }
+                        </div>
+                        </div>
+                    </div>
+                }
+                @else if(applicationInfo()?.statusla == false)
+                {
+                    <!-- modifica rifiutata -->
+                    <div class="la-rejected-banner" style="margin-top: 15px;">
+                        <div class="la-rejected-header">
+                        <div class="la-icon-rejected">✕</div>
+                        <div>
+                            <strong class="la-rejected-title">Change in Mobility Refused by the professor</strong>
+                            <p class="subtext-la-rejected">
+                            Refused by {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}
+                            </p>
+                        </div>
+                        </div>
+                            
+                        <div class="la-motivazione-box">
+                        <span class="la-motivazione-label">Refusal motivation:</span>
+                        <p class="la-motivazione-testo">
+                            {{ applicationInfo()?.refusalMotivation || 'No refusal motivation given.' }}
+                        </p>
+                        </div>
+                    </div>
+                }
+                @else if(applicationInfo()?.statusla == true)
+                {
+                    <!-- modifica approvata -->
+                    <div class="la-approved-banner" style="margin-top: 15px; background-color: #f0fdf4; border-color: #bbf7d0;">
+                        <div class="la-approved-info">
+                            <div class="la-icon" style="background-color: #10b981; color: white;">✓</div>
+                            <div>
+                                <strong style="color: #166534;">Change in Mobility Approved by the professor</strong>
+                                <p class="subtext-la" style="color: #15803d;">
+                                    Accepted by {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}. The Study Plan and the LA have been updated.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <hr class="fase-divider">
+
+            <!-- Data Partenza -->
+            <div style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                Departure date: {{applicationInfo()?.departureDate}}
+            </div>
+        }
+        @else
+        {
+            <div class="sezione-bloccata-box">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-text">
+                <strong>Mobility Phase not yet active</strong>
+                <p style="margin-bottom: 10px;">To enable date logging and on-the-go changes, student must complete the following steps:</p>
+                <ul style="list-style: none; padding-left: 0; margin: 0; font-size: 0.88rem;">
+                <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                    @if(applicationInfo()?.statusla)
+                    {
+                    <span style="color: #10b981; font-weight: bold;">✓</span>
+                    <span><strong>Learning Agreement:</strong> Approved by the professor</span>
+                    }
+                    @else
+                    {
+                    <span style="color: #ef4444; font-weight: bold;">✕</span>
+                    <span style="color: #991b1b;"><strong>Learning Agreement:</strong> Not approved yet</span>
+                    }
+                </li>
+                <li style="display: flex; align-items: center; gap: 8px;">
+                    @if(applicationInfo()?.confirmedMobility)
+                    {
+                    <span style="color: #10b981; font-weight: bold;">✓</span>
+                    <span><strong>Pre-Departure phase:</strong> Validated by the Overseas Sector</span>
+                    }
+                    @else
+                    {
+                    <span style="color: #ef4444; font-weight: bold;">✕</span>
+                    <span style="color: #991b1b;"><strong>Pre-Departure phase:</strong> Not yet validated by the Overseas Sector</span>
+                    }
+                </li>
+                </ul>
+            </div>
+            </div>
+        }
+    </div>
+
+    <!-- INSERIMENTO VOTI E DATE ESAMI -->
+    <div class="sezione-card card-fase-mobilita">
+        <div class="sezione-fase-header">
+            <span class="badge-fase">RETURN PHASE</span>
+            <h3 class="sezione-titolo-fase">Exam Recognition</h3>
+        </div>
+        @if(applicationInfo()?.statusla && ['Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami','In attesa conferma Ufficio Overseas', 'Chiusa'].includes(applicationInfo()?.state ?? ''))
+        {
+            <div class="tabella-overflow">
+                <table class="tabella-pratiche tabella-mapping" id="tabellaVotiRientro">
+                <thead>
+                    <tr>
+                    <th>FOREIGN COURSE CODE</th>
+                    <th>FOREIGN COURSE TITLE</th>
+                    <th>FOREIGN COURSE CFU</th>
+                    <th>GRADE ACHIEVED</th>
+                    <th>EXAM DATE</th>
+                    @if(['In attesa conferma Ufficio Overseas', 'Chiusa'].includes(applicationInfo()?.state ?? ''))
+                    {
+                        <th>FEEDBACK</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  @for ( mapping of examsMapping(); track mapping.foreignCourseCode + '-' + mapping.caFoscariCourseCode+'-'+mapping.idApplication ) 
+                  {
+                        <tr
+                        [class.row-approved]="(applicationInfo()?.state === 'Chiusa' || applicationInfo()?.state === 'In attesa conferma Ufficio Overseas') && mapping.approved"
+                        [class.row-not-approved]="(applicationInfo()?.state === 'Chiusa' || applicationInfo()?.state === 'In attesa conferma Ufficio Overseas') && !mapping.approved"
+                        >
+
+                      <td><strong>{{ mapping.foreignCourseCode }}</strong></td>
+                      <td>{{ mapping.foreignCourseTitle }}</td>
+                      <td><span class="badge-cfu">{{ mapping.foreignCourseCFU }} CFU</span></td>
+                        <td class="input-voto form-control-date">@if(mapping.examVote == null) { Not done } @else { {{ mapping.examVote }} }</td>
+                        <td class="input-data form-control-date">@if(mapping.examDate == null) { Data not available } @else { {{ mapping.examDate }} }</td>
+                        @if(['In attesa conferma Ufficio Overseas', 'Chiusa'].includes(applicationInfo()?.state ?? ''))
+                        {
+                            @if(mapping.approved)
+                            {
+                                <td>APPROVATO</td>
+                            }
+                            @else
+                            {
+                                <td>NON APPROVATO</td>
+                            }
+                        }
+                    </tr>                               
+                  }
+                </tbody>
+                </table>   
+            </div>
+
+            <!-- upload Transcripts Of Records -->
+            <div class="sezione-card">
+                <div class="sezione-titolo">Transcripts Of Records</div>
+                <div class="area-upload-file">
+                <button
+                    type="button"
+                    (click)="downloadTranscriptsOfRecords()"
+                    class="btn-download-la">
+                    📥 Download TOR
+                </button>
+                </div>
+            </div>
+        }
+        @else
+        {
+            <div class="sezione-bloccata-box">
+                <div class="lock-icon">🔒</div>
+                <div class="lock-text">
+                    <strong>Return phase not yet active</strong>
+                    <p style="margin-bottom: 10px;">To enable exams evaluations and dates, student must complete the following steps:</p>
+                    <ul style="list-style: none; padding-left: 0; margin: 0; font-size: 0.88rem;">
+                    <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                        @if(applicationInfo()?.statusla)
+                        {
+                        <span style="color: #10b981; font-weight: bold;">✓</span>
+                        <span><strong>Learning Agreement:</strong> Approved by the professor</span>
+                        }
+                        @else if(applicationInfo()?.statusla == false || applicationInfo()?.statusla == null)
+                        {
+                        <span style="color: #ef4444; font-weight: bold;">✕</span>
+                        <span style="color: #991b1b;"><strong>Learning Agreement:</strong> Not approved or uploaded yet</span>
+                        }
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 8px;">
+                        @if(applicationInfo()?.confirmedMobility)
+                        {
+                        <span style="color: #10b981; font-weight: bold;">✓</span>
+                        <span><strong>Pre-Departure phase:</strong> Validated by the Overseas Sector</span>
+                        }
+                        @else
+                        {
+                        <span style="color: #ef4444; font-weight: bold;">✕</span>
+                        <span style="color: #991b1b;"><strong>Pre-Departure phase:</strong> Not yet validated by the Overseas Sector</span>
+                        }
+                    </li>
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- conferma chiusura pratica-->
+    <div>
+        @if(applicationInfo()?.state == 'In attesa conferma Ufficio Overseas') 
+        {
+            <button (click)="closeApplication()">Mark Application as closed</button>
+        }
+    </div>
+</main>

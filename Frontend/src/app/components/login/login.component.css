@@ -1,0 +1,211 @@
+/* css per la schermata di login */
+
+body.login-diviso {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #ffffff;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.login-contenitore-diviso {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* metÃ  sinistra (color viola) */
+.login-parte-sinistra {
+    flex: 1;
+    background-color: #473378;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    position: relative;
+}
+
+.contenuto-nome-app {
+    max-width: 440px;
+    text-align: center;
+}
+
+.wrapper-icona-nome-app {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px auto;
+    font-size: 2.5rem;
+    color: #ffffff;
+}
+
+.contenuto-nome-app h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+    color: #ffffff;
+}
+
+.contenuto-nome-app p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.88;
+    color: #f3f0f9;
+}
+
+/* metÃ  destra (color bianco) */
+.login-parte-destra {
+    flex: 1;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.wrapper-login-form {
+    width: 100%;
+    max-width: 400px;
+}
+
+.wrapper-login-form h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+
+.testo-sottotitolo {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+/* input accesso */
+.form-personalizzato {
+    margin-bottom: 20px;
+}
+
+.form-personalizzato label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.icona-input-gruppo {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.icona-input {
+    position: absolute;
+    left: 14px;
+    color: #473378;
+    font-size: 1rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    border-color: #473378;
+    box-shadow: 0 0 0 3px rgba(71, 51, 120, 0.15);
+}
+
+/* pulsante accedi */
+.btn-accedi {
+    width: 100%;
+    background-color: #473378;
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(71, 51, 120, 0.2);
+}
+
+.btn-accedi:hover {
+    background-color: #5b4299;
+}
+
+/* pulsanti registrati */
+.btn-registrati {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: transparent;
+    color: #473378;
+    border: 1.5px solid #473378;
+    padding: 11px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.btn-registrati:hover {
+    background-color: #f3f0f9;
+    color: #5b4299;
+}
+
+/* divisore tra accedi e registrati */
+.divisore {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 24px 0;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.divisore::before, .divisore::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.divisore::before { margin-right: 0.8em; }
+.divisore::after { margin-left: 0.8em; }
+
+/* messaggi di errore che escono se credenziali errate o manca la sessione */
+.alert-personalizzato {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alert-erorre-credenziali {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}

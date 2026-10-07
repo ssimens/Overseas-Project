@@ -1,0 +1,36 @@
+services:
+
+  database:
+    image: postgres:17-alpine
+
+    ports:
+      - "5432:5432"
+
+    env_file:
+      - ./Backend/credentials.env
+
+    volumes:
+      - ./Database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build:
+      context: ./Backend
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - ./Backend/credentials.env
+
+    depends_on:
+      - database
+
+  frontend:
+    build:
+      context: ./Frontend
+
+    ports:
+      - "4200:4200"
+      
+    depends_on:
+      - backend

@@ -1,0 +1,85 @@
+<!-- header dell'applicazione -->
+<app-header></app-header>
+
+<!-- dashboard con pratiche -->
+<main class="application-list-container">
+  <div class="application-list-detail">
+    <div class="application-list-title">
+      <h2>Student Dashboard</h2>
+      <p>Welcome {{ user.name }} {{ user.surname }}! Manage your mobility applications.</p>
+    </div>
+    <div>
+      <a routerLink="/newapplication" class="btn-new-application">+ New Application</a>
+    </div>
+  </div>
+
+  @if(errorMessage) 
+  {
+    <div class="alert alert-danger mt-2">
+      {{ errorMessage }}
+    </div>
+  } 
+
+  <!-- badge stati pratiche -->
+  <div class="application-summary">
+    <span class="state-badge yellow-state">Totals: {{ this.totalsApplications() }}</span>
+    <span class="state-badge yellow-state">In progress: {{ this.inProgressApplications() }}</span>
+    <span class="state-badge red-state">Under evaluation: {{ this.evaluationApplications() }}</span>
+    <span class="state-badge green-state">Closed: {{ this.closedApplications() }}</span>
+  </div>
+
+  <!-- lista pratiche -->
+  <div class="element-table">
+    <table class="application-table">
+      <thead>
+        <tr>
+          <th>ID / A.A.</th>
+          <th>DESTINATION</th>
+          <th>PROFESSOR</th>
+          <th>STATE</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (application of applications(); track application.id) 
+        {
+          <tr>
+            <td>
+              <span [ngClass]="application.state !== 'Chiusa' ? 'id-blue' : 'id-grey'">
+                #{{ application.id }}
+              </span>
+              <span class="cell-subtext">A.A. {{ application.year }}</span>
+            </td>
+            <td>
+                <span class="destination-title">{{ application.hostUni }}</span>
+                <span class="cell-subtext">{{ application.hostUniCity }}, {{ application.hostUniCountry }}</span>
+            </td>
+            <td>
+                <span class="professor-text">{{ application.professorName }} {{ application.professorSurname }}</span>
+                <span class="cell-subtext">{{ application.professorEmail }}</span>
+            </td>
+            <td>
+              <span class="state-badge" [ngClass]="getBadgeClass(application.state)">
+                {{ application.state }}
+              </span>
+            </td>
+            <td class="btn-detail-text">
+              <button class="btn-detail" (click)="openApplicationDetails(application.id)">
+                View Details
+              </button>
+            </td>
+          </tr>
+        }
+
+        @if(applications().length == 0)
+        {
+          <tr>
+            <td class="no-application">
+              No application found.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</main>

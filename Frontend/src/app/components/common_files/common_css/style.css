@@ -1,0 +1,130 @@
+/* css base */
+:root {
+    --purple-main: #473378;          /* colore viola principale */
+    --purple-hover: #5b4299;         /* variante leggermente piÃ¹ chiara per l'hover */
+    --bg-page: #f7f7f8;              /* sfondo pagina */
+    --table-header-bg: #efeff1;      /* sfondo intitolazione tabella */
+    --text-main: #0e0e10;
+    --text-muted: #53535f;
+    --purple-light-bg: #f3f0f9;      /* sfondo per icone e focus */
+    --purple-focus-ring: rgba(71, 51, 120, 0.2);
+}
+
+body {
+    background-color: var(--bg-page);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+  /* Allineamento Barra Superiore */
+.barra-navigazione-superiore {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: #3b0764; /* Colore viola dell'header */
+    color: white;
+}
+
+/* Contenitore di posizionamento */
+.profilo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Distanza tra il testo e l'icona */
+}
+
+/* Stile per Nome e Matricola */
+.testo-utente-header {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Icona circolare stilizzata */
+.btn-avatar {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-avatar:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #ffffff;
+}
+
+.btn-avatar svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Menu Dropdown (Nascosto di default) */
+.dropdown-logout-box {
+    display: none; 
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e2e8f0;
+    min-width: 120px;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Classe attivata da JavaScript al click */
+.dropdown-logout-box.attivo {
+    display: block !important;
+}
+
+/* Pulsante Esci dentro il menu */
+.item-logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    color: #ef4444;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
+}
+
+.item-logout:hover {
+    background-color: #fef2f2;
+}
+
+/* BARRA SUPERIORE IN VIOLA #473378 */
+.barra-navigazione-superiore {
+    background-color: var(--purple-main);
+    color: white;
+    padding: 12px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.barra-navigazione-testo-titolo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.2px;
+}
+
+.barra-navigazione-utente {
+    font-size: 0.82rem;
+    opacity: 0.85;
+}

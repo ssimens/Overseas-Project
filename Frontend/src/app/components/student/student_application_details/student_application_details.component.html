@@ -1,0 +1,594 @@
+<main class="application-list-container">
+  <div class="dettaglio-top-bar">
+      <button (click)="goBackHome()" class="btn-back-home">← Back to Dashboard</button>
+  </div>
+
+  <div class="application-list-header">
+      <div class="application-list-title">
+          <h2>Application details #{{ applicationInfo()?.id }} — {{ applicationInfo()?.hostUni }} @if(applicationInfo()?.state == 'Chiusa'){/ CLOSED}</h2>
+          <p>{{ applicationInfo()?.hostUniCity }} ({{ applicationInfo()?.hostUniCountry }}) — A.A. {{ applicationInfo()?.year }}</p>
+      </div>
+  </div>
+
+  <!-- linea stati avanzamento pratica -->
+  <time-line [timeLineState]="applicationInfo()?.state"></time-line>
+
+  <!-- informazioni generali pratica -->
+  <div class="section-card">
+    <div class="section-title">GENERAL INFORMATION</div>
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">HOST UNIVERSITY</span>
+        <span class="info-value">{{ applicationInfo()?.hostUni }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">COUNTRY - CITY</span>
+        <span class="info-value">{{ applicationInfo()?.hostUniCountry }} - {{ applicationInfo()?.hostUniCity }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">PERIOD - YEAR</span>
+        <span class="info-value">{{ applicationInfo()?.scheduledPeriod }} - {{ applicationInfo()?.year }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">PROFESSOR</span>
+        <span class="info-value">{{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }} - {{ applicationInfo()?.professorEmail }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- mapping corsi -->
+  <div class="section-card">
+    <div class="section-title">
+        STUDY PLAN
+        @if(applicationInfo()?.state == 'Mobilità in corso' && applicationInfo()?.modifiedla)
+        {
+          <span style="font-size: 0.75rem; background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-weight: normal; margin-left: 8px;">Updated in Mobility</span>
+        }
+    </div>
+    <div class="overflow-table">
+      <table class="application-table mapping-table">
+        <thead>
+          <tr>
+              <th>FOREIGN CODE</th>
+              <th>FOREIGN COURSE TITLE</th>
+              <th>FOREIGN CFU</th>
+              <th>CA' FOSCARI CODE</th>
+              <th>CA' FOSCARI COURSE TITLE</th>
+              <th>CA' FOSCARI CFU</th>
+          </tr> 
+        </thead>
+        <tbody>
+          @if (examsMapping().length > 0) 
+          {
+            @for (mapping of examsMapping();  track mapping.foreignCourseCode + '-' + mapping.caFoscariCourseCode) 
+            {
+              <tr>
+                <td><strong>{{ mapping.foreignCourseCode }}</strong></td>
+                <td>{{ mapping.foreignCourseTitle }}</td>
+                <td><span class="badge-cfu">{{ mapping.foreignCourseCFU }} CFU</span></td>
+                <td><strong>{{ mapping.caFoscariCourseCode }}</strong></td>
+                <td>{{ mapping.caFoscariCourseTitle }}</td>
+                <td><span class="badge-cfu">{{ mapping.caFoscariCourseCFU }} CFU</span></td>
+              </tr>
+            }
+          }
+          @else
+          {
+            <tr>
+              <td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">
+                  No courses associated with this application.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- upload LA -->
+  <div class="section-card">
+    <div class="section-title">
+      LEARNING AGREEMENT
+    </div>
+    @if(applicationInfo()?.learningagreement == null)
+    {
+      <div class="upload-file-area">
+        <form (ngSubmit)="uploadLearningAgreement()" enctype="multipart/form-data">
+          <input type="hidden" name="idapplication" [value]="applicationInfo()?.id"/>
+          <label for="learningagreement" class="btn-upload-file">Choose file (PDF): </label>
+          <input type="file" id="learningagreement" name="uploaded_file" style="display: none;" accept=".pdf,application/pdf" #learningagreementFile (change)="learningagreement = learningagreementFile.files?.[0] ?? null" required/>
+          <span id="nome-file-selezionato" class="file-name">No file selected</span>
+          <button type="submit" [disabled]="!learningagreement" class="btn-send-uploaded-file">Upload file</button> <!-- mettere funzione che aggirona la pagina-->
+        </form>
+      </div>
+    } 
+    @else
+    {
+      @if(applicationInfo()?.state == 'In attesa di approvazione del Learning Agreement')
+      {
+        <!-- LA In attesa di decisione del docente -->
+        @if (applicationInfo()?.statusla == null) 
+        {
+          <div class="la-pending-banner">
+            <div class="la-approved-info" style="margin-bottom: 15px;">
+              <div class="la-icon-pending">⏳</div>
+              <div>
+                <strong>Learning Agreement to be Evaluated</strong>
+                <p class="subtext-la-pending">View the document and select an action.</p>
+              </div>
+            </div>
+            <!-- Bottone Download sempre visibile per la revisione -->
+            <div style="margin-bottom: 20px;">
+              <button type="button" (click)="downloadLearningAgreement()" class="btn-download-la">
+                  📥 Download LA
+              </button>
+            </div>
+          </div>
+        }
+        @else
+        {
+          <!-- LA Approvato -->
+          @if (applicationInfo()?.statusla) 
+          {
+            <div class="la-approved-banner">
+              <div class="la-approved-info">
+                <div class="la-icon">✓</div>
+                  <div>
+                    <strong>Approved Learning Agreement</strong>
+                    <p class="subtext-la">This Learning Agreement has been approved by {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}.</p>
+                  </div>
+              </div>
+            <button type="button" (click)="downloadLearningAgreement()" class="btn-download-la">
+                📥 Download LA
+            </button>
+            </div>
+          } 
+          <!-- LA Respinto -->
+          @else if(applicationInfo()?.statusla == false) 
+          {
+            <div class="la-rejected-banner">
+              <div class="la-rejected-header">
+                <div class="la-icon-rejected">✕</div>
+                <div>
+                    <strong class="la-rejected-title">Refused Learning Agreement</strong>
+                    <p class="subtext-la-rejected">This Learning Agreement has been rejected by {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}. You need to do some changes on your application.</p>
+                </div>
+              </div>
+              <div class="la-motivation-box">
+                <span class="la-motivation-label">Refusal reason:</span>
+                <p class="la-motivation-text">
+                    {{ applicationInfo()?.refusalMotivation || 'No refusal motivation given.' }}
+                </p>
+              </div>
+              <button (click)="modifyApplication()">Modify Application</button>
+            </div>
+          } 
+        }
+      }
+      @else
+      {
+        <div>
+          <button type="button" (click)="downloadLearningAgreement()" class="btn-download-la">
+              📥 Download LA
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Note Studente -->
+  <div class="section-card">
+    <div class="section-title">OPTIONAL NOTE FOR PROFESSOR</div>
+    <div class="reading-note-box">
+      @if(applicationInfo()?.studentNotes && applicationInfo()?.studentNotes.trim())
+      {
+          {{ applicationInfo()?.studentNotes }}
+      }
+      @else
+      {
+          No notes entered by the student for this application.
+      }
+    </div>
+  </div>
+
+  <!-- fase in mobilita -->
+  <div class="section-card current-phase-card">
+    <div class="header-phase-section">
+      @if(applicationInfo()?.state == 'Chiusa' || applicationInfo()?.state == 'In riconoscimento esami' || applicationInfo()?.state == 'In attesa conferma Ufficio Overseas')
+      {
+        <span class="phase-badge">CLOSED MOBILITY PHASE</span>
+        <h3 class="phase-title-section">YOUR MOBILITY PHASE STATUS</h3>
+      }
+      @else
+      {
+        <span class="phase-badge">IN MOBILITY PHASE</span>
+        <h3 class="phase-title-section">STAY MANAGEMENT AND MOBILITY CHANGES</h3>
+      }
+    </div>
+    @if(['Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami', 'Chiusa'].includes(applicationInfo()?.state ?? ''))
+    {
+      <!-- Data Arrivo -->
+      <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            @if(applicationInfo()?.state == 'Mobilità in corso' && applicationInfo()?.confirmedMobility == false)
+            {
+              <label for="arriveDate" class="mobility-date">
+                Select your Arrival date:
+              </label>
+
+              <input type="date" id="arriveDate" name="arriveDate" [(ngModel)]="arriveDate" class="mobility-date-input" required>
+            }
+            @else
+            {
+              <label for="arriveDate" class="mobility-date">
+                Your Arrival date:
+              </label>
+              {{ arriveDate }}
+            }
+      </div>
+
+      <hr class="phase-divider">
+
+      @if(applicationInfo()?.state == 'Mobilità in corso')
+      {
+        <!-- 2. modifica mapping esami e LA -->
+        <div>
+          <h4>NEED TO CHANGE STUDY PLAN?</h4>
+          <p class="subtext-section">If your exam schedule changes, you can propose a change by replacing/adding exams and uploading the updated Learning Agreement.</p>
+
+            <!-- attesa che venga approvato o rifiutato mapping e LA modificato (da rivedere le condizioni) -->
+            @if(applicationInfo()?.modifiedla == true && applicationInfo()?.approvedmodifies == null)
+            {
+              <div class="la-pending-banner" style="margin-top: 15px;">
+                <div class="la-approved-info">
+                  <div class="la-icon-pending">⏳</div>
+                  <div>
+                    <strong style="color: #92400e; font-size: 0.95rem;">Change to the Learning Agreement pending approval</strong>
+                    <p class="subtext-la-pending" style="margin-top: 4px;">
+                      Under evaluation by the relevant teacher <strong>{{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}</strong>.
+                    </p>
+                    @if(applicationInfo()?.learningagreement && applicationInfo()?.modifiedla)
+                    {
+                      <p style="font-size: 0.8rem; color: #b45309; margin-top: 6px;">📄 Uploaded file: <em>{{ applicationInfo()?.learningagreement }}</em></p>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+            @else if(applicationInfo()?.statusla == false)
+            {
+              <!-- modifica rifiutata -->
+              <div class="la-rejected-banner" style="margin-top: 15px;">
+                <div class="la-rejected-header">
+                  <div class="la-icon-rejected">✕</div>
+                  <div>
+                    <strong class="la-rejected-title">Refused by the Teacher</strong>
+                    <p class="subtext-la-rejected">
+                      The current Study Plan and Learning Agreement have been refused by {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}
+                    </p>
+                  </div>
+                </div>
+                    
+                <div class="la-motivation-box">
+                  <span class="la-motivation-label">Refusal motivation:</span>
+                  <p class="la-motivation-text">
+                    {{ applicationInfo()?.refusalMotivation || 'No refusal motivation given.' }}
+                  </p>
+                </div>
+              </div>
+
+              @if(applicationInfo()?.confirmedMobility == false)
+              {
+                <div>
+                  <button type="button" (click)="openApplicationExamsMapping(applicationInfo()?.idUni ?? 0)" class="btn-change-study-plan">
+                    Propose a change to the study plan. <!-- apre la schermata per modificare il mapping-->
+                  </button> 
+                </div>
+              }
+            }
+            @else if(applicationInfo()?.statusla == true)
+            {
+              <!-- modifica approvata -->
+              <div class="la-approved-banner" style="margin-top: 15px;">
+                <div class="la-approved-info">
+                  <div class="la-icon">✓</div>
+                  <div>
+                      <strong style="color: #166534;">Approved by the Teacher</strong>
+                      <p class="subtext-la">
+                          The current Study Plan and Learning Agreement have been accepted by {{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}.
+                      </p>
+                  </div>
+                </div>
+              </div>
+
+              @if(applicationInfo()?.confirmedMobility == false)
+              {
+                <div>
+                  <button type="button" (click)="openApplicationExamsMapping(applicationInfo()?.idUni ?? 0)" class="btn-change-study-plan">
+                    Propose a change to the study plan. 
+                  </button> 
+                </div>
+              }
+            }
+        </div>
+      }
+
+        <hr class="phase-divider">
+
+        <!-- Data Partenza -->
+        <div style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            @if(applicationInfo()?.state == 'Mobilità in corso' && applicationInfo()?.confirmedMobility == false)
+            {
+              <label for="departureDate" class="mobility-date">
+                Select your Departure date:
+              </label>
+              <input type="date" id="departureDate" name="departureDate" placeholder="{{ applicationInfo()?.departureDate }}" [(ngModel)]="departureDate" class="mobility-date-input" required>
+            }
+            @else
+            {
+              <label for="departureDate" class="mobility-date">
+                Your departure date: 
+              </label>
+              {{ departureDate }}
+            }
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+        <!-- BOTTONE CONFERMA E INVIA MOBILITÀ -->
+        <div>
+          @if (applicationInfo()?.state == 'Mobilità in corso')
+          {
+            @if(applicationInfo()?.statusla != false && (applicationInfo()?.modifiedla != true && applicationInfo()?.approvedmodifies != null))
+            {
+              @if(applicationInfo()?.confirmedMobility == false)
+              {
+                <button type="button" (click)="confirmMobilityPhase()" class="btn-close-mobility">
+                  Close Mobility Phase
+                </button>
+              }
+              @else
+              {
+                <div class="btn-mobility-closed">
+                  🔒 Mobility phase already closed
+                </div>
+              }
+            }
+            @else
+            {
+              <div class="btn-mobility-closed">
+                🔒 You need an approved Study Plan before closing mobility phase
+              </div>
+            }
+          }
+        </div>
+    }
+    @else
+    {
+      <div class="locked-section-box">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-text">
+          <strong>Mobility Phase not yet active</strong>
+          <p style="margin-bottom: 10px;">To enable date logging and on-the-go changes, you must complete the following steps:</p>
+          <ul style="list-style: none; padding-left: 0; margin: 0; font-size: 0.88rem;">
+            <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+              @if(applicationInfo()?.statusla)
+              {
+                <span style="color: #10b981; font-weight: bold;">✓</span>
+                <span><strong>Learning Agreement:</strong> Approved by the professor</span>
+              }
+              @else if(applicationInfo()?.statusla == false || applicationInfo()?.statusla == null)
+              {
+                <span style="color: #ef4444; font-weight: bold;">✕</span>
+                <span style="color: #991b1b;"><strong>Learning Agreement:</strong> Not approved or uploaded yet</span>
+              }
+            </li>
+            <li style="display: flex; align-items: center; gap: 8px;">
+              @if(applicationInfo()?.confirmedMobility)
+              {
+                <span style="color: #10b981; font-weight: bold;">✓</span>
+                <span><strong>Pre-Departure phase:</strong> Validated by the Overseas Sector</span>
+              }
+              @else
+              {
+                <span style="color: #ef4444; font-weight: bold;">✕</span>
+                <span style="color: #991b1b;"><strong>Pre-Departure phase:</strong> Not yet validated by the Overseas Sector</span>
+              }
+            </li>
+          </ul>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- INSERIMENTO VOTI E DATE ESAMI -->
+
+  @if(['Mobilità in corso', 'In riconoscimento esami', 'Chiusa', 'In attesa conferma Ufficio Overseas'].includes(applicationInfo()?.state ?? '') &&  applicationInfo()?.confirmedMobility == true)
+  {
+    <div class="section-card current-phase-card">
+      <div class="header-phase-section">
+        @if(applicationInfo()?.state == 'Chiusa' || applicationInfo()?.state == 'In riconoscimento esami' || applicationInfo()?.state == 'In attesa conferma Ufficio Overseas')
+        {
+          <span class="phase-badge">EXAMS STATUS</span>
+          <h3 class="phase-title-section">YOUR EXAMS EVALUATIONS AND DATES</h3>
+        }
+        @else
+        {
+          <span class="phase-badge">RETURN PHASE</span>
+          <h3 class="phase-title-section">INSERT EXAMS EVALUATIONS, DATES AND UPLOAD THE TRANSCRIPTS OF RECORDS</h3>
+        }
+      </div>
+      <div class="overflow-table">
+        @if(applicationInfo()?.state == 'Mobilità in corso' && modifyVotesMode)
+        {
+          <table class="application-table mapping-table" id="tabellaVotiRientro">
+            <thead>
+              <tr>
+                <th>FOREIGN COURSE CODE</th>
+                <th>FOREIGN COURSE TITLE</th>
+                <th>FOREIGN COURSE CFU</th>
+                <th>GRADE ACHIEVED</th>
+                <th>EXAM DATE</th>
+              </tr>
+            </thead>                      
+            <tbody>
+              @for ( mapping of examsMapping(); track mapping.foreignCourseCode + '-' + mapping.caFoscariCourseCode+'-'+mapping.idApplication ) 
+              {
+                <tr>
+                  <td><strong>{{ mapping.foreignCourseCode }}</strong></td>
+                  <td>{{ mapping.foreignCourseTitle }}</td>
+                  <td><span class="badge-cfu">{{ mapping.foreignCourseCFU }} CFU</span></td>
+                  <td>
+                    <div>
+                      <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="number" [(ngModel)]="examValues[mapping.foreignCourseCode + '_' + mapping.caFoscariCourseCode + '_' + mapping.idApplication].vote" placeholder="Voto" min="0" max="31" (ngModelChange)="insertedVote(mapping)">
+                        <input type="radio" [name]="'decision_' + mapping.foreignCourseCode + '_' + mapping.caFoscariCourseCode" [(ngModel)]="examValues[mapping.foreignCourseCode + '_' + mapping.caFoscariCourseCode + '_' + mapping.idApplication].decision" [value]="false" (change)="notCarried(mapping)">
+                        Not done <!-- falso indica che non c'è il voto (non svolto)-->
+                      </label>
+                    </div>
+                  </td> 
+                  <td>
+                    <div>
+                      @if(examValues[mapping.foreignCourseCode + '_' + mapping.caFoscariCourseCode + '_' + mapping.idApplication].decision  === true)
+                      {
+                        <input type="date" [(ngModel)]="examValues[mapping.foreignCourseCode+'_'+mapping.caFoscariCourseCode+'_'+mapping.idApplication].date">
+                      }
+                    </div>
+                  </td>
+                </tr>   
+              }
+            </tbody>
+          </table>
+        }
+        @else
+        {
+          <table class="application-table mapping-table" id="tabellaVotiRientro">
+            <thead>
+              <tr>
+                <th>FOREIGN COURSE CODE</th>
+                <th>FOREIGN COURSE TITLE</th>
+                <th>FOREIGN COURSE CFU</th>
+                <th>GRADE ACHIEVED</th>
+                <th>EXAM DATE</th>
+                @if(applicationInfo()?.state == 'Chiusa')
+                {
+                  <th>FEEDBACK</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for( mapping of examsMapping(); track mapping.foreignCourseCode + '-' + mapping.caFoscariCourseCode+'-'+mapping.idApplication ) 
+              {
+
+                  <tr
+                    [class.row-approved]="applicationInfo()?.state === 'Chiusa' && mapping.approved"
+                    [class.row-not-approved]="applicationInfo()?.state === 'Chiusa' && !mapping.approved"
+                    >
+
+                  <td><strong>{{ mapping.foreignCourseCode }}</strong></td>
+                  <td>{{ mapping.foreignCourseTitle }}</td>
+                  <td><span class="badge-cfu">{{ mapping.foreignCourseCFU }} CFU</span></td>
+                    <td>@if(mapping.examVote == null) { NOT DONE } @else { {{ mapping.examVote }} }</td>
+                    <td>@if(mapping.examDate == null) { / } @else { {{ mapping.examDate }} }</td>
+                
+                @if(applicationInfo()?.state == 'Chiusa' && mapping.approved)
+                {
+                  <td>APPROVED</td>
+                }
+                @else if (applicationInfo()?.state == 'Chiusa' && !mapping.approved)
+                {
+                  <td>NOT APPROVED</td>
+                }
+                </tr>
+              }
+            </tbody>
+          </table>   
+        }
+      </div>
+      @if(applicationInfo()?.state == 'Mobilità in corso')
+      {
+        <div class="btn-exams-vote-container">
+          <button type="button" id="btnSalvaVoti" class="btn-exams-vote" (click)="modifyExamsVotes()">
+            Modify Votes <!-- inizia a inserire o modificare gli esami/date-->
+          </button>
+          <button type="button" id="btnSalvaVoti" class="btn-exams-vote" (click)="sendExamsModifies()">
+            Save and Submit <!-- invia definitivamente le modifiche-->
+          </button>
+        </div>
+      }
+      @if(applicationInfo()?.state == 'In riconoscimento esami')
+      {
+        <div class="la-pending-banner" style="margin-top: 15px;">
+          <div class="la-approved-info">
+            <div class="la-icon-pending">⏳</div>
+            <div>
+              <strong style="color: #92400e; font-size: 0.95rem;">Exams recognition pending approval</strong>
+              <p class="subtext-la-pending" style="margin-top: 4px;">
+                Under evaluation by the relevant teacher <strong>{{ applicationInfo()?.professorName }} {{ applicationInfo()?.professorSurname }}</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- upload Transcripts Of Records -->
+    <div class="section-card">
+      <div class="section-title">Transcripts Of Records</div>
+      <div class="upload-file-area">
+        @if(applicationInfo()?.transcriptsofrecords == null)
+        {
+          <form (ngSubmit)="uploadTranscriptsOfRecords()" enctype="multipart/form-data">
+            <input type="hidden" name="idapplication" [value]="applicationInfo()?.id"/>
+            <label for="transcriptsofrecords" class="btn-upload-file">Upload TranscriptsOfRecords (PDF): </label>
+            <input type="file" id="transcriptsofrecords" name="uploaded_file" style="display: none;" accept=".pdf,application/pdf" #transcriptsofrecordsFile (change)="transcriptsofrecords = transcriptsofrecordsFile.files?.[0] ?? null" required/>
+            <span id="nome-file-selezionato" class="file-name">No file selected</span>
+            <button type="submit" [disabled]="!transcriptsofrecords" class="btn-send-uploaded-file">Upload File</button>
+          </form>
+        }
+        @else
+        { 
+          <div>
+            <button type="button" (click)="downloadTranscriptsOfRecords()" class="btn-download-la">
+                📥 Download TOR
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+    </div>
+  }
+  @else
+  {
+    <div class="locked-section-box">
+      <div class="lock-icon">🔒</div>
+      <div class="lock-text">
+        <strong>Return Phase not yet active</strong>
+        <p style="margin-bottom: 10px;">To enable exams evaluations and dates, you must complete the following steps:</p>
+        <ul style="list-style: none; padding-left: 0; margin: 0; font-size: 0.88rem;">
+          <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+            @if(applicationInfo()?.statusla)
+            {
+              <span style="color: #10b981; font-weight: bold;">✓</span>
+              <span><strong>Learning Agreement:</strong> Approved by the professor</span>
+            }
+            @else if(applicationInfo()?.statusla == false || applicationInfo()?.statusla == null)
+            {
+              <span style="color: #ef4444; font-weight: bold;">✕</span>
+              <span style="color: #991b1b;"><strong>Learning Agreement:</strong> Not approved or uploaded yet</span>
+            }
+          </li>
+          <li style="display: flex; align-items: center; gap: 8px;">
+            @if(applicationInfo()?.state == "Pre-partenza completata")
+            {
+              <span style="color: #10b981; font-weight: bold;">✓</span>
+              <span><strong>Mobility phase:</strong> Sended</span>
+            }
+            @else
+            {
+              <span style="color: #ef4444; font-weight: bold;">✕</span>
+              <span style="color: #991b1b;"><strong>Mobility phase:</strong> Not yet sended</span>
+            }
+          </li>
+        </ul>
+      </div>
+    </div>
+  }
+</main>

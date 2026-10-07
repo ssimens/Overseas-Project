@@ -1,0 +1,10 @@
+npm install cors
+npm install pg
+npm install dotenv
+npm install express
+npm install argon2
+npm install jsonwebtoken
+npm install --save-dev nodemon
+npm install multer
+npm install bootstrap @fortawesome/fontawesome-free
+npm install cookie-parser

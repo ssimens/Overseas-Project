@@ -1,0 +1,9 @@
+# Environment / secrets
+credentials.env
+
+# Dependencies
+Frontend/node_modules/
+Backend/node_modules/
+
+# Angular cache
+Frontend/.angular/

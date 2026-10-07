@@ -1,0 +1,100 @@
+<main class="application-list-container">
+    <div class="application-list-header">
+        <div class="application-list-title">
+            <h2>Modify Exams Mapping during Mobility</h2>
+            <p>Add, remove or modify courses, upload a new Learning Agreement file and provide a description of the change in order to change your study plan during mobility.</p>
+        </div>
+    </div>
+    <div class="section-card">
+        <div class="section-title">Courses Mapping</div>
+        <div class="table-overflow">
+            <table class="application-table mapping-table">
+                <thead>
+                    <tr>
+                        <th>Foreign Course</th>
+                        <th>Ca' Foscari Course</th>
+                        <th>REMOVE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (examsMapping().length === 0) 
+                    {
+                        <tr>
+                            <td colspan="3" class="no-courses">
+                                Nessun corso inserito. Seleziona i corsi sotto e clicca su "+".
+                            </td>
+                        </tr>
+                    }
+                    @for( mapping of examsMapping(); track mapping.foreignCourseCode + '-' + mapping.caFoscariCourseCode + '-' + $index)
+                    {
+                        <tr>
+                            <!-- CORSI ESTERI -->
+                            <td>
+                                <select class="foreignMappedCourses form-control" [value]="mapping.foreignCourseCode" (change)="onForeignCourseChange(mapping, $event); updateOptions('foreignMappedCourses')" required>     
+                                    <option value="" disabled>Select Foreign Course</option>
+                                    @for (corso of foreignCourses(); track corso.code)
+                                    {
+                                        <option [value]="corso.code" [selected]="corso.code === mapping.foreignCourseCode" [disabled]="isForeignCourseSelected(corso.code, mapping)">
+                                            {{ corso.code }} - {{ corso.name }} ({{ corso.cfu }} CFU)
+                                        </option>
+                                    }
+                                </select>
+                            </td>
+                            <!-- CORSI CA' FOSCARI -->
+                            <td>
+                                <select class="caFoscariMappedCourses form-control" [value]="mapping.caFoscariCourseCode" (change)="onCaFoscariCourseChange(mapping, $event); updateOptions('caFoscariMappedCourses')" required>
+                                    <option value="" disabled>Select Ca' Foscari course</option>
+                                    @for (corso of caFoscariCourses(); track corso.code)
+                                    {
+                                        <option [value]="corso.code" [selected]="corso.code === mapping.caFoscariCourseCode" [disabled]="isCaFoscariCourseSelected(corso.code, mapping)">
+                                            {{ corso.code }} - {{ corso.name }} ({{ corso.cfu }} CFU)
+                                        </option>
+                                    }
+                                </select>
+                            </td>
+
+                            <td>
+                                <button type="button" (click)="removeMapping(mapping)" class="btn-remove-row">
+                                    X
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div>
+                <button type="button" (click)="addMapping()" [disabled]="!canAddMapping()" class="btn-add-course">
+                    + Add new mapping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">Description of the study plan changes (*Obligatory)</div>
+        <div class="form-field">
+            <textarea [(ngModel)]="modificationText" name="modificationText" class="form-textarea" rows="6" placeholder="Description of the study plan changes..."></textarea>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">Learning agreement</div>
+        <div class="upload-file-area">
+                <input type="hidden" name="idapplication" [value]="idApplication"/>
+                <label for="learningagreement" class="btn-upload-file">Choose file (PDF): </label>
+                <input type="file" id="learningagreement" name="uploaded_file" style="display: none;" accept=".pdf,application/pdf" #learningagreementFile (change)="learningagreement = learningagreementFile.files?.[0] ?? null" required/>
+                <span id="nome-file-selezionato" class="file-name">
+                    {{ learningagreement ? learningagreement.name : 'No file selected' }}
+                </span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="button" (click)="goBack()" class="btn-cancel">
+            Cancel
+        </button>
+        <button type="button" (click)="sendMapping()" class="btn-submit">
+            Submit changes
+        </button>
+    </div>
+</main>

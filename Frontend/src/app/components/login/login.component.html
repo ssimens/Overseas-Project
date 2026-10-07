@@ -1,0 +1,56 @@
+<div class="login-contenitore-diviso">
+    <!-- LATO SINISTRO: parte viola con titolo piattaforma -->
+    <div class="login-parte-sinistra">
+        <div class="contenuto-nome-app">
+            <div class="wrapper-icona-nome-app">
+                <i class="fa-solid fa-globe"></i>
+            </div>
+            <h1>Overseas Portal</h1>
+            <p>Manage your international mobility experience quickly and easily.</p>
+        </div>
+    </div>
+
+    
+    <!-- LATO DESTRO: fprm accesso -->
+    <div class="login-parte-destra">
+        <div class="wrapper-login-form">
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+            <h2>Sign in to the Portal</h2>
+            <p class="testo-sottotitolo">Insert your credentials to continue</p>
+
+            <!-- Email -->
+            <div class="form-personalizzato">
+                <label for="email">Email</label>
+                <div class="icona-input-gruppo">
+                    <i class="fa-regular fa-envelope icona-input"></i>
+                    <input id="email" type="email" formControlName="email" class="form-input" placeholder="Insert email..." required/>
+                </div>
+            </div>
+
+
+            <!-- Pssword -->
+            <div class="form-personalizzato">
+                <label for="password">Password</label>
+                <div class="icona-input-gruppo">
+                    <i class="fa-solid fa-lock icona-input"></i>
+                    <input id="password" type="password" formControlName="password" class="form-input" placeholder="Insert password..." required/>
+                </div>
+            </div>
+
+
+            <!-- Bottone accedi-->
+            <button type="submit" class="btn-accedi">
+                <i class="fa-solid fa-right-to-bracket me-2"></i>Sign in
+            </button>
+
+            @if (loginError) 
+            {
+                <div class="alert-personalizzato alert-errore-credenziali">
+                    <i class="fa-solid fa-circle-exclamation"></i> Email or password wrong
+                </div>
+            }
+            </form>
+        </div>
+    </div>
+</div>

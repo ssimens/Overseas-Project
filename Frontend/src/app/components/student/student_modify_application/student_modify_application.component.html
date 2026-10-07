@@ -1,0 +1,151 @@
+<main class="application-list-container">
+    <div class="application-list-header">
+        <div class="application-list-title">
+            <h2>Modify Overseas Application</h2>
+            <p>Change the essential information or add, remove or modify courses, and upload a new Learning Agreement file in order to send a valid application.</p>
+        </div>
+    </div>
+
+    <form (ngSubmit)="sendApplication()">
+        <div class="section-card">
+            <div class="section-title">Essential data</div>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="anno_accademico">Accademic year</label>
+                    <select id="anno_accademico" name="anno_accademico" [(ngModel)]="accademicYear" class="form-dropdown" required>
+                        <option value="" disabled selected>Select year...</option>
+                        <option value="2026/2027">2026/2027</option>
+                        <option value="2025/2026">2025/2026</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="periodo_previsto">Expected period</label>
+                    <select id="periodo_previsto" name="periodo_previsto" [(ngModel)]="expectedPeriod" class="form-dropdown" required>
+                        <option value="" disabled selected>Select period...</option>
+                        <option value="Primo Semestre">First semester</option>
+                        <option value="Secondo Semestre">Second semester</option>
+                        <option value="Intero Anno">Whole year</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="istituto_ospitante">Host University</label>
+                    <select id="istituto_ospitante" name="istituto_ospitante" [(ngModel)]="idUni" class="form-dropdown" required>
+                        <option [ngValue]="null" disabled selected>Select university...</option>
+                        @for (university of uni(); track university.iduni) 
+                        {
+                            <option [value]="university.iduni">{{ university.name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="docente_referente">Professor in charge</label>
+                    <select id="docente_referente" name="docente_referente" [(ngModel)]="idProfessor" class="form-dropdown" required>
+                        <option [ngValue]="null" disabled selected>Select professor...</option>
+                        @for (prof of professor(); track prof.idutente) 
+                        {
+                            <option [value]="prof.idutente">Prof. {{ prof.name }} {{ prof.surname }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">Courses Mapping</div>
+            <div class="table-overflow">
+                <table class="applications-table mapping-table">
+                    <thead>
+                        <tr>
+                            <th>FOREIGN CODE</th>
+                            <th>FOREIGN TITLE</th>
+                            <th>FOREIGN CFU</th>
+                            <th>CA' FOSCARI CODE</th>
+                            <th>CA' FOSCARI TITLE</th>
+                            <th>CA' FOSCARI CFU</th>
+                            <th>REMOVE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mapping-table-body">
+                        @if (mapping().length === 0) 
+                        {
+                            <tr id="empty-row">
+                                <td colspan="7" style="text-align: center; color: #94a3b8; padding: 18px;">
+                                    No courses added. Select the courses below and click "+".
+                                </td>
+                            </tr>
+                        }
+                        @for (course of mapping(); track $index) 
+                        {
+                            <tr>
+                                <td>{{ course.foreignCourseCode }}</td>
+                                <td>{{ course.foreignCourseTitle }}</td>
+                                <td>{{ course.foreignCourseCFU }}</td>
+                                <td>{{ course.caFoscariCourseCode }}</td>
+                                <td>{{ course.caFoscariCourseTitle }}</td>
+                                <td>{{ course.caFoscariCourseCFU }}</td>
+                                <td>
+                                    <button type="button" class="btn-remove-row" (click)="removeCourse($index)">✕</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="new-course-container">
+                <span class="new-course-label">New course</span>
+                <div class="new-course-insertion">
+                    <select name="select_corso_estero" [(ngModel)]="selectedForeignCourseCode" class="form-dropdown">
+                        <option value="" disabled selected>Select foreign course...</option>
+                        @for (ce of foreignCourses(); track ce.code) 
+                        {
+                            <option [value]="ce.code">
+                                {{ ce.code }} - {{ ce.name }} ({{ ce.cfu }} CFU)
+                            </option>
+                        }
+                    </select>
+
+                    <select name="select_corso_cf" [(ngModel)]="selectedCaFoscariCourseCode" class="form-dropdown">
+                        <option value="" disabled selected>Select Ca' Foscari course...</option>
+                        @for (cf of caFoscariCourses(); track cf.code) 
+                        {
+                            <option [value]="cf.code">
+                                {{ cf.code }} - {{ cf.name }} ({{ cf.cfu }} CFU)
+                            </option>
+                        }
+                    </select>
+                    <button type="button" class="btn-add-course" (click)="addCourseToMapping()">+</button>
+                </div>
+            </div>
+        </div>
+
+    
+
+        <div class="section-card">
+            <div class="section-title">Optional notes for the professor</div>
+            <div class="form-field">
+                <textarea id="notestudente" name="notestudente" [(ngModel)]="studentNotes" class="form-textarea" rows="6" placeholder="Enter any notes or explanations for the professor..."></textarea>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">Learning agreement</div>
+            <div class="upload-file-area">
+                <input type="hidden" name="idapplication" [value]="idApplication"/>
+                <label for="learningagreement" class="btn-upload-file">Choose file (PDF): </label>
+                <input type="file" id="learningagreement" name="uploaded_file" style="display: none;" accept=".pdf,application/pdf" #learningagreementFile (change)="learningagreement = learningagreementFile.files?.[0] ?? null" required/>
+                <span id="nome-file-selezionato" class="file-name">
+                    {{ learningagreement ? learningagreement.name : 'No file selected' }}
+                </span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button (click)="goBack()" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-submit">Submit application</button>
+        </div>
+    </form>
+</main>

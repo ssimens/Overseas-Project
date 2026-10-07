@@ -1,0 +1,145 @@
+<div class="sezione-card">
+    <div class="sezione-titolo">Mobility Progress Status:</div>
+
+    <div class="timeline-orizzontale-wrapper">
+        <div class="timeline-orizzontale">
+
+        <!-- STEP 1: Creata -->
+        <div class="timeline-step step-completed">
+            <div class="step-icon">✓</div>
+            <span class="step-label">Created</span>
+        </div>
+
+        <div class="timeline-line {{ 
+                                        ['In attesa conferma pre-partenza', 'Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? '') ? 'line-completed' : 
+                                        ['Creata', 'In attesa di approvazione del Learning Agreement'].includes(timeLineState ?? '')  ? 'line-active' : 
+                                        'line-upcoming' 
+                                    }}">
+        </div>
+
+        <!-- STEP 2: Approvazione LA -->
+        <div class="timeline-step {{ 
+                                        ['In attesa conferma pre-partenza','Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? '') ? 'step-completed' : 
+                                        ['Creata','In attesa di approvazione del Learning Agreement'].includes(timeLineState ?? '')  ? 'step-active' : 
+                                        'step-upcoming' 
+                                    }}">
+            <div class="step-icon">
+                @if (['In attesa conferma pre-partenza', 'Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? ''))
+                {
+                    ✓
+                }
+                @else
+                {
+                    2
+                }
+            </div>
+            <span class="step-label">LA Approvation</span>
+        </div>
+
+        <div class="timeline-line {{ 
+                                        ['Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? '') ? 'line-completed' : 
+                                        ['In attesa conferma pre-partenza'].includes(timeLineState ?? '')  ? 'line-active' : 
+                                        'line-upcoming' 
+                                    }}">
+        </div>
+
+        <!-- STEP 3: Pre-Partenza -->
+        <div class="timeline-step {{ 
+                                        ['Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? '') ? 'step-completed' : 
+                                        ['In attesa conferma pre-partenza'].includes(timeLineState ?? '')  ? 'step-active' : 
+                                        'step-upcoming' 
+                                    }}">
+            <div class="step-icon">
+                @if (['Pre-partenza completata', 'Mobilità in corso', 'In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? ''))
+                {
+                    ✓
+                }
+                @else
+                {
+                    3
+                }
+            </div>
+            <span class="step-label">Pre-Departure</span>
+        </div>
+
+        <div class="timeline-line {{ 
+                                        ['In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? '') ? 'line-completed' : 
+                                        ['Pre-partenza completata', 'Mobilità in corso'].includes(timeLineState ?? '')  ? 'line-active' : 
+                                        'line-upcoming' 
+                                    }}">
+        </div>
+
+        <!-- STEP 4: In Mobilità -->
+        <div class="timeline-step {{ 
+                                        ['In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? '') ? 'step-completed' : 
+                                        ['Pre-partenza completata', 'Mobilità in corso'].includes(timeLineState ?? '')  ? 'step-active' : 
+                                        'step-upcoming' 
+                                    }}">
+            <div class="step-icon">
+                @if (['In riconoscimento esami', 'In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? ''))
+                {
+                    ✓
+                }
+                @else
+                {
+                    4
+                }
+            </div>
+            <span class="step-label">In Mobility</span>
+        </div>
+
+        <div class="timeline-line {{ 
+                                        ['In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? '') ? 'line-completed' : 
+                                        ['In riconoscimento esami'].includes(timeLineState ?? '')  ? 'line-active' : 
+                                        'line-upcoming' 
+                                    }}">
+        </div>
+
+        <!-- STEP 5: In riconoscimento esami -->
+        <div class="timeline-step {{ 
+                                        ['In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? '') ? 'step-completed' : 
+                                        ['In riconoscimento esami'].includes(timeLineState ?? '')  ? 'step-active' : 
+                                        'step-upcoming' 
+                                    }}">
+            <div class="step-icon">
+                @if (['In attesa conferma Ufficio Overseas', 'Chiusa'].includes(timeLineState ?? ''))
+                {
+                    ✓
+                }
+                @else
+                {
+                    5
+                }
+            </div>
+            <span class="step-label">Exam Recognition</span>
+        </div>
+
+        <div class="timeline-line {{ 
+                                        ['Chiusa'].includes(timeLineState ?? '') ? 'line-completed' : 
+                                        ['In attesa conferma Ufficio Overseas'].includes(timeLineState ?? '')  ? 'line-active' : 
+                                        'line-upcoming' 
+                                    }}">
+        </div>
+
+        <!-- STEP 6: Chiusa -->
+        <div class="timeline-step {{ 
+                                        ['Chiusa'].includes(timeLineState ?? '') ? 'step-completed' : 
+                                        ['In attesa conferma Ufficio Overseas'].includes(timeLineState ?? '')  ? 'step-active' : 
+                                        'step-upcoming' 
+                                    }}">
+            <div class="step-icon">
+                @if (['Chiusa'].includes(timeLineState ?? ''))
+                {
+                    ✓
+                }
+                @else
+                {
+                    6
+                }
+            </div>
+            <span class="step-label">Closed</span>
+        </div>
+
+        </div>
+    </div>
+</div>
